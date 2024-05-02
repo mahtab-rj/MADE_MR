@@ -30,7 +30,7 @@ pipeline FlughafenPipeline {
         ];
     }
 
-    //loads the table into sqlite DB
+    //Loads the table into sqlite DB
     block FlughafenLoader oftype SQLiteLoader {  
         table: "airports";
         file: "./airports.sqlite";
