@@ -7,7 +7,7 @@ Greenhouse Gas Giants Analysis
 ## Main Question
 
 <!-- Think about one main question you want to answer based on the data. -->
-1. Does analyzing the emissions data of major carbon-emitting entities provide insights into their environmental impact and contribution to climate change?
+Does analyzing the emissions data of major carbon-emitting entities provide insights into their environmental impact and contribution to climate change?
 
 ## Description
 <!-- Describe your data science project in max. 200 words. Consider writing about why and how you attempt it. -->
@@ -16,9 +16,13 @@ The project aims to analyze the emissions data of major carbon-emitting entities
 ## Datasources
 <!-- Describe each datasources you plan to use in a section. Use the prefic "DatasourceX" where X is the id of the datasource. -->
 Datasource1: Carbon Majors Emissions Data
+
 Metadata URL: https://www.kaggle.com/datasets/konradb/greenhouse-gas-giants
+
 Data URL: https://www.kaggle.com/datasets/konradb/greenhouse-gas-giants
+
 Data Type: CSV
+
 Short description of the DataSource.
 The Carbon Majors dataset contains information on the greenhouse gas emissions of major carbon-emitting entities. The dataset is updated annually and provides emissions data at different levels of granularity, including total emissions, commodity production, and operational emissions.
 
@@ -27,16 +31,24 @@ The Carbon Majors dataset contains information on the greenhouse gas emissions o
 
 <!-- List of work packages ordered sequentially, each pointing to an issue with more details. -->
 
-Data Collection and Preprocessing #1Issue [i1]
-Exploratory Data Analysis #2Issue [i2]
-Temporal Trend Analysis #3Issue [i3]
-Predictive Modeling and Forecasting #4Issue [i4]
-Report Generation and Documentation #5Issue [i5]
+1.Data Collection and Preprocessing #1Issue [i1]
+
+2.Exploratory Data Analysis #2Issue [i2]
+
+3.Temporal Trend Analysis #3Issue [i3]
+
+4.Predictive Modeling and Forecasting #4Issue [i4]
+
+5.Report Generation and Documentation #5Issue [i5]
 
 [i1]: https://github.com/mahtab-rj/MADE_MR/issues/1
+
 [i2]: https://github.com/mahtab-rj/MADE_MR/issues/2
+
 [i3]: https://github.com/mahtab-rj/MADE_MR/issues/3
+
 [i4]: https://github.com/mahtab-rj/MADE_MR/issues/4
+
 [i5]: https://github.com/mahtab-rj/MADE_MR/issues/5
 
 
