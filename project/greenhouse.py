@@ -6,28 +6,22 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 api_kaggle = KaggleApi()
 api_kaggle.authenticate()
 
-data_address = 'konradb/greenhouse-gas-giants/'
+data_address = 'imtkaggleteam/co-and-greenhouse-gas-emissions'
+data_address2 = 'subhamjain/temperature-of-all-countries-19952020'
 
-directory = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'konradb/greenhouse-gas-giants')
+api_kaggle.dataset_download_files(data_address, path='./data', unzip=True)
+api_kaggle.dataset_download_files(data_address2, path='./data2', unzip=True)
 
-file_list = os.listdir(directory)
-csv = api_kaggle.dataset_download_files(data_address, path=data_address, unzip=True)
-files_list = []
-table_names = []
-for file in file_list:
-    if file[-4:] != ".pdf" :
-        # print(file)
-        files_list.append(os.path.join(directory, file))
-        table_names.append(file[ : -4])
-        # print(table_names)
+directory = [x for x in os.listdir('./data') if x.endswith('.csv')]
+directory2 = [x for x in os.listdir('./data2') if x.endswith('.csv')]
+green = pd.read_csv(os.path.join('./data',directory[1]))
+temperature = pd.read_csv(os.path.join('./data2',directory2[0]))
 
 path = "../data/greenhouse.db"
-os.makedirs(os.path.dirname(path), exist_ok=True)
 connection = sqlite3.connect(path)
 
-for i in range(3): 
-    pd_csv = pd.read_csv(files_list[i])
-    pd_csv.to_sql(table_names[i], connection, if_exists="replace", index=False)
+green.to_sql('greenhouse', connection, if_exists="replace", index=False)
+temperature.to_sql('temperature_cities', connection, if_exists="replace", index=False)
 
-
+connection.commit()
 connection.close()
