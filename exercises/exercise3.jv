@@ -1,0 +1,111 @@
+//top level entity
+pipeline BefordertePipeline {
+    block BeforderteExtractor oftype HttpExtractor { 
+        url: "https://www-genesis.destatis.de/genesis/downloads/00/tables/46131-0014_00.csv"; 
+    }
+
+    block BeforderteCSVInterpreter oftype CSVInterpreter { 
+        delimiter: ';'; 
+    }
+
+    //Remove metadata rows
+    block TextLineselector oftype TextRangeSelector {
+         lineFrom:8;
+        lineTo:41336;    }
+
+    //Ensure German umlauts are saved correctly
+    block BeforderteTextFileInterpreter oftype TextFileInterpreter { 
+        encoding: "latin2";  
+    }
+
+    //Select only a subset of columns
+    block BeforderSelector oftype CellRangeSelector
+    {
+        select: range A1:AU*;
+    }
+    
+    ////Assign built-in types
+    block BeforderteTableInterpreter oftype TableInterpreter {
+        header: false;
+        columns: [
+            "year" oftype Year,
+            "month" oftype Month,
+            "goods_id" oftype GoodsID,
+            "goods_name" oftype text,
+            "goods_source" oftype text,
+            "abroad" oftype Quantity,
+            "total" oftype Quantity
+        ];
+    }
+
+    //Add header names for the first columns A-E
+    block BeforderHeaderChange oftype CellWriter
+    {
+        at: range A1:E1;
+        write: ["year", "month", "goods_id", "goods_name", "goods_source"];
+    }
+
+    //Rename headers for the quantity columns
+    block QuantityHeaderChange oftype CellWriter
+    {
+        at: range AT1:AU1;
+        write: [ "abroad", "total"];
+    }
+
+     //Drop rows with missing or invalid values
+    block BeforderRowDeleter oftype RowDeleter {
+        delete: [row 1, row 2, row 3, row 4, row 5, row 6, row 7];
+    }
+
+
+    //Loads the table into sqlite DB
+    block BeforderteLoader oftype SQLiteLoader { 
+        table: "goods"; 
+        file: "./goodsTransportedByTrain.sqlite"; 
+    }
+
+
+    valuetype Year oftype integer {
+        constraints: [ PositiveInteger ];
+    }
+
+    valuetype Month oftype text {
+        constraints: [ GermanMonth ];
+    }
+
+    valuetype GoodsID oftype text {
+        constraints: [ GoodsIDPattern ];
+    }
+
+    valuetype Quantity oftype integer {
+        constraints: [ PositiveInteger ];
+    }
+
+    constraint PositiveInteger oftype RangeConstraint {
+        lowerBound: 1;
+        upperBoundInclusive: true;
+    }
+
+    constraint GermanMonth oftype AllowlistConstraint {
+        allowlist: [ "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" ];
+    }
+
+    constraint GoodsIDPattern oftype RegexConstraint {
+        regex: /^NST7-[A-Z0-9]{3}$/;
+    }
+
+
+    //Chaining th blocks
+    BeforderteExtractor
+        -> BeforderteTextFileInterpreter
+        -> TextLineselector
+        -> BeforderteCSVInterpreter
+        -> BeforderRowDeleter 
+        -> BeforderSelector
+        -> BeforderHeaderChange
+        -> QuantityHeaderChange
+        -> BeforderteTableInterpreter
+        -> BeforderteLoader;
+}
+
+
