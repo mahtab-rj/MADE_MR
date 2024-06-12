@@ -95,7 +95,7 @@ pipeline BefordertePipeline {
     }
 
 
-    //Chaining th blocks
+    //Chaining the blocks
     BeforderteExtractor
         -> BeforderteTextFileInterpreter
         -> TextLineselector

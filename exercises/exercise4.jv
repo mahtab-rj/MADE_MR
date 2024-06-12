@@ -1,0 +1,101 @@
+pipeline WeatherProcessingPipeline
+{
+    block BatterietempExtractor oftype HttpExtractor {
+        url: "https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip";
+    } 
+    
+    //Unzip data
+    block ArchiveBatterietemp oftype ArchiveInterpreter {
+        archiveType: "zip";
+    }
+    
+    block BatterietempCSVInterpreter oftype CSVInterpreter {
+        delimiter: ";";
+    }
+
+    //Using the “data.csv” in the zip file
+    block BatterietempFile oftype FilePicker {
+        path: "/data.csv";
+    }
+
+    block BatterietempFileInterpreter oftype TextFileInterpreter { 
+        encoding: "utf8";
+    }
+    //Columns selector
+    block BatterietempColumnsDeleter oftype ColumnDeleter{
+        delete: [column F, column G, column H, column I];
+    }
+
+    block BatterietempRowsDeleter oftype RowDeleter {
+        delete: [row 1];
+    }
+
+    block BatterietempCellSelector oftype CellRangeSelector   
+    {
+        select: range A1:J*;
+    }
+
+    //Translate/rename column
+    block BatterietempInterpreter oftype TableInterpreter
+    {
+        header : false;
+        columns : [
+            "id" oftype newId,
+            "producer" oftype text,
+            "model" oftype text,
+            "month" oftype integer,
+            "temperature" oftype decimal,
+            "battery_temperature" oftype decimal,
+        ];
+    }
+
+    //Transform temperatures in Celsius to Fahrenheit
+    block TemperatureTransformer oftype TableTransformer 
+    {
+        inputColumns: ['temperature'];
+        outputColumn: 'temperature';
+        use: CelsiusToFahrenheit;
+    }
+
+    block BatterietempTransformer oftype TableTransformer 
+    {
+        inputColumns: ['battery_temperature'];
+        outputColumn: 'battery_temperature';
+        use: CelsiusToFahrenheit;
+    }
+
+    transform CelsiusToFahrenheit 
+    {
+        from tempC oftype decimal;
+        to tempF oftype decimal;
+        tempF: (tempC * 9/5) + 32;
+    }
+
+    block BatterietempLoader oftype SQLiteLoader 
+    {
+        table: "temperatures";
+        file: "./temperatures.sqlite";
+    }
+
+    //Select ID over 0
+    valuetype newId oftype integer
+    {
+        constraints: [PositiveId];
+    }
+
+    constraint PositiveId on integer:
+        value > 0;
+
+    //Chaining the blocks
+    BatterietempExtractor-> ArchiveBatterietemp;
+      ArchiveBatterietemp -> BatterietempFile
+        -> BatterietempFileInterpreter
+        -> BatterietempCSVInterpreter
+        -> BatterietempColumnsDeleter
+        -> BatterietempRowsDeleter
+        -> BatterietempCellSelector
+        -> BatterietempInterpreter
+        -> TemperatureTransformer
+        -> BatterietempTransformer
+        -> BatterietempLoader;
+}
