@@ -1,4 +1,6 @@
 .DS_Store
 /data/*
 !/data/.gitkeep
-/project/konardb
+/project/data
+/project/data2
+/project/__pycache__
