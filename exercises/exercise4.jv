@@ -35,7 +35,7 @@ pipeline WeatherProcessingPipeline
         select: range A1:J*;
     }
 
-    //Translate/rename column
+    //Rename column
     block BatterietempInterpreter oftype TableInterpreter
     {
         header : false;

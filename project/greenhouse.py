@@ -17,9 +17,8 @@ directory2 = [x for x in os.listdir('./data2') if x.endswith('.csv')]
 green = pd.read_csv(os.path.join('./data',directory[1]))
 temperature = pd.read_csv(os.path.join('./data2',directory2[0]))
 
-data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
-path = os.path.join(data_dir, 'greenhouse.db')
-#path = "../data/greenhouse.db"
+dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
+path = os.path.join(dir, 'greenhouse.db')
 connection = sqlite3.connect(path)
 
 green.to_sql('greenhouse', connection, if_exists="replace", index=False)
