@@ -1,5 +1,6 @@
 .DS_Store
-/data/*
+/data
+/data2
 !/data/.gitkeep
 /project/data
 /project/data2
