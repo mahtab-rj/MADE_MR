@@ -29,7 +29,8 @@ jobs:
           echo "{\"username\":\"${{ secrets.KAGGLE_NAME }}\",\"key\":\"${{ secrets.KAGGLE_PASS }}\"}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
 
+    - name: Executable test
+      run: chmod +x project/tests.sh
+
     - name: Run tests
-      run: |
-        chmod +x project/tests.sh
-        ./project/tests.sh
+      run: project/tests.sh
